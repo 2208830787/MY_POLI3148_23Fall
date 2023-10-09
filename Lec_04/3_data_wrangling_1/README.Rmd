@@ -123,7 +123,7 @@ library(tidyverse)
 This section loads the VDEM dataset and describe its basic information
 
 ```{r}
-d <- read_csv("_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+d <- read_csv("/Users/frankchan/Library/CloudStorage/OneDrive-UniversityofGlasgow/github/MY_POLI3148_23Fall/_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
 ```
 
 ### 2. Select economic development indicators

@@ -1,0 +1,155 @@
+---
+title: "In_class exercise 10.9"
+author: "Feiyang CHen"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+d <- read_csv("/Users/frankchan/Library/CloudStorage/OneDrive-UniversityofGlasgow/github/MY_POLI3148_23Fall/_DataPublic_/vdem/1984_2022/vdem_1984_2022_external.csv")
+```
+
+In-Class Exercise
+
+The quality of education has a decisive effect on a country's future development. Applying the data wrangling tools we introduce in this lecture, perform the following task:
+
+1.  **Codebook lookup**. Look up the codebook, answer the following questions:
+    1.  What indicators regarding the quality of education are available in the V-Dem datasets?
+
+        1.  Education 15+ (E) (e_peaveduc)
+
+            Educational inequality, Gini (E) (e_peedgini)
+
+    2.  What are the data's coverage (i.e., for which countries and years do we have data?)
+
+        1900-2022
+
+    3.  What are their sources? Provide the link to least 1 source.
+
+        Pemstein et al. (2023, V-Dem Working Paper Series 2023:21); V-Dem Codebook (see suggested citation at the top of this document)
+2.  **Subset by columns**
+    1.  Create a dataset containing only the country-year identifiers and indicators of education quality.
+
+    2.  Rename the columns of education quality to make them informative.
+3.  **Subset by rows**
+    1.  List 5 countries-years that have the highest education level among its population.
+
+    2.  List 5 countries-years that suffer from the most severe inequality in education.
+4.  **Summarize the data**
+    1.  Check data availability: For which countries and years are the indicators of education quality available?
+
+    2.  Create two types of country-level indicators of education quality
+
+        1.  Average level of education quality from 1984 to 2022
+
+        2.  Change of education quality from 1984 to 2022
+
+    3.  Examine the data and *briefly* discuss: Which countries perform the best and the worst in terms of education quality in the past four decades?
+
+Submission **requirement:** You will submit your outputs through Moodle. In your submission:
+
+1.  Attach a PDF document rendered by Rmarkdown
+2.  In the text field of your submission, include the link to the corresponding Rmarkdown file in your *DaSPPA portfolio* GitHub repo.
+
+1.1 Education 15+ (E) (e_peaveduc), Educational inequality, Gini (E) (e_peedgini)
+
+1.2 1900-2022, all countries
+
+```{r}
+d_education <- d |> 
+  select(country_name, year, e_peaveduc, e_peedgini)
+
+str(d_education)
+
+```
+
+1.3 Pemstein et al. (2023, V-Dem Working Paper Series 2023:21); V-Dem Codebook (see suggested citation at the top of this document)
+
+2.1
+
+```{r}
+d_education <- d |> 
+  select(country_name, year, e_peaveduc, e_peedgini)
+
+d_education
+```
+
+2.2
+
+```{r}
+d_education <- d_education |>
+  rename("Education_level" = "e_peaveduc") |>
+  rename("Educational_inequality" = "e_peedgini") |>
+  rename("Country" = "country_name") |>
+  rename("Year" = "year")
+
+```
+
+3.1
+
+```{r}
+d_education |> 
+  slice_max(order_by = Education_level, n = 5)
+```
+
+3.2
+
+```{r}
+d_education |> 
+  slice_max(order_by = Educational_inequality, n = 5)
+```
+
+4.1
+
+```{r}
+d_education_filter <- d_education[!is.na(d_education$Educational_inequality), ]
+d_education_filter 
+
+d_education_filter |> 
+  select(Country, Year) 
+```
+
+Create two types of country-level indicators of education quality
+
+-   Average level of education quality from 1984 to 2022
+
+-   Change of education quality from 1984 to 2022
+
+4.2.1
+
+```{r}
+d_education_filter <- d_education[!is.na(d_education$Educational_inequality), ]
+
+selected <- d_education_filter |> 
+  select(Country, Education_level) 
+```
+
+```{r}
+averages <- selected |> group_by(Country) |> summarise(avg_el = mean(Education_level))
+averages
+```
+
+4.2.2
+
+```{r}
+d_education_filter_2 <- d_education[!is.na(d_education$Education_level), ]
+
+change <- d_education_filter_2 |> 
+  select(Country, Year, Education_level) |> 
+  group_by(Country) |> 
+  summarise(change = Education_level[which.max(Year)] - Education_level[which.min(Year)])
+
+change
+```
+
+4.3
+
+Examine the data and *briefly* discuss: Which countries perform the best and the worst in terms of education quality in the past four decades?
